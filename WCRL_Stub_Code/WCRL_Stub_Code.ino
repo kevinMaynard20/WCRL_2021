@@ -1,19 +1,19 @@
-import processing.serial.*;
+
 #include <SoftwareSerial.h>
 #include <AFMotor.h>
  
-SoftwareSerial hc05(10,11);//RX, TX
+SoftwareSerial hc05(A3,A5);//RX, TX
 int BluetoothData;
 
 
 
 
 AF_DCMotor m_Right(2, MOTOR12_64KHZ);
-AF_DCMotor m_Left(2, MOTOR12_64KHZ);
-AF_DCMotor m_ArmMaster(2, MOTOR12_64KHZ);
-AF_DCMotor m_ArmSlave(2, MOTOR12_64KHZ);
+AF_DCMotor m_Left(1, MOTOR12_64KHZ);
+AF_DCMotor m_ArmMaster(3, MOTOR12_64KHZ);
+AF_DCMotor m_ArmSlave(4, MOTOR12_64KHZ);
 
-final char FORWARD='a',TLEFT='b',TRIGHT='c',STOP='A',SMASH='d',STOP_SMASH='B',STOP_ALL='C',DROP='z',FLIP='Z', STOP_ARM='y';
+ char FORWARDS='a',TLEFT='b',TRIGHT='c',STOP='A',STOP_ALL='C',DROP='z',FLIP='Z', STOP_ARM='y';
 
 
 
@@ -28,14 +28,12 @@ void setup() {
   
 }
 void controller(char input){
-   if(input==FORWARD) 
+   if(input==FORWARDS) 
       moveForward();
    else if(input==TLEFT)
       turnLeft();
    else if(input==TRIGHT)
       turnRight();
-   else if(input==SMASH)
-      smash();
    else if(input==STOP)
       stopMove();
    else if(input==DROP)
@@ -46,58 +44,71 @@ void controller(char input){
       stopArm();
    else if(input==STOP_ALL){
       stopMove();
-      stopSmash();
+      stopArm();
    }
-   else{
-      stopMove();
-      stopSmash();    
-   }
+   //else{
+      //stopMove();
+     // stopArm();    
+   //}
 }
 
 void loop() {
-  digitalWrite(m_Right,****);
-  digitalWrite(m_RightBrake,****);
+  //digitalWrite(m_Right,****);
+  //digitalWrite(m_RightBrake,****);
 
-  digitalWrite(m_Left, ****);
-  digitalWrite(m_LeftBrake, ****);
+  //digitalWrite(m_Left, ****);
+  //digitalWrite(m_LeftBrake, ****);
   
-  digitalWrite(m_ArmMaster, ****);
-  digitalWrite(m_MasterBrake, ****); 
+  //digitalWrite(m_ArmMaster, ****);
+  //digitalWrite(m_MasterBrake, ****); 
    
-  digitalWrite(m_ArmSlave, ****);
-  digitalWrite(m_SlaveBrake, ****);
+  //digitalWrite(m_ArmSlave, ****);
+  //digitalWrite(m_SlaveBrake, ****);
   
-  if(hc05.available()==true){
+  
+  //if(hc05.available()==true){
     controller(hc05.read());
-  }
-  else{
-    stopMove();
-    stopSmash();
-    Serial.write("Error communicating with device) 
-  }
+    
+  //}
+  //else{
+   // stopMove();
+   // stopArm();
+   // Serial.write("Error communicating with device"); 
+ // }
 
 }
-
-void moveForward(){
+void moveBackwards(){
+  m_Right.setSpeed(100);
+  m_Left.setSpeed(100);
 m_Right.run(FORWARD);
-m_Left.run(BACKWARDS);
+m_Left.run(BACKWARD);
+}
+void moveForward(){
+  m_Right.setSpeed(100);
+  m_Left.setSpeed(100);
+m_Right.run(FORWARD);
+m_Left.run(BACKWARD);
 }
 void turnLeft(){
-m_Right.run(BACKWARDS);
-m_Left.run(BACKWARDS); 
-}
-void turnRight(){
+  m_Right.setSpeed(50);
+  m_Left.setSpeed(50);
 m_Right.run(FORWARD);
 m_Left.run(FORWARD); 
 }
+void turnRight(){
+  m_Right.setSpeed(50);
+  m_Left.setSpeed(50);
+m_Right.run(BACKWARD);
+m_Left.run(BACKWARD); 
+}
 void drop(){
 m_ArmMaster.run(FORWARD);
-m_ArmSlave.run(BACKWARDS;
-delay(300); 
+m_ArmSlave.run(BACKWARD);
+ 
 }
 void flip(){
-  m_ArmMaster.run(BACKWARDS);
-m_ArmSlave.run(FORWARD);
+  m_ArmMaster.run(BACKWARD);
+  m_ArmSlave.run(FORWARD);
 }
 void stopArm(){
   m_ArmMaster.run(RELEASE);
